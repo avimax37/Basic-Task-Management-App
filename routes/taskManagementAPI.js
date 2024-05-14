@@ -109,8 +109,9 @@ router.delete("/tasks/delete/:id", async (req, res) => {
     if (checkTaskId.rows.length === 0) {
       return res.json("Task does not exist!");
     }
-    const deleteById = await pool.query("DELETE FROM tasks WHERE id=$1", [id]);
-    res.json("Task deleted successfully!");
+    const deleteById = await pool.query("DELETE FROM tasks WHERE id=$1 RETURNING id", [id]);
+    const deleteTaskId = deleteById.rows[0].id;
+    res.json(`Task: ${deleteTaskId} deleted successfully!`);
   } catch (error) {
     console.log(error.message);
     res.status(500).send("Internal Server Error!");
