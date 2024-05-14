@@ -83,12 +83,12 @@ router.put("/tasks/update/:id", async (req, res) => {
         (status === "completed" && currentTaskStatus === "incomplete")
       ) {
         const updateById = await pool.query(
-          "UPDATE tasks SET status=$1 WHERE id=$2 RETURNING status",
+          "UPDATE tasks SET status=$1 WHERE id=$2 RETURNING status, id",
           [status, id]
         );
-        res.json("Task status updated successfully!");
+        res.json(`Task: ${id} status updated successfully!`);
       } else {
-        return res.json(`Task status is already ${status}!`);
+        return res.json(`Task: ${id} status is already ${status}!`);
       }
     } catch (error) {
       console.log(error.messgae);
@@ -109,9 +109,11 @@ router.delete("/tasks/delete/:id", async (req, res) => {
     if (checkTaskId.rows.length === 0) {
       return res.json("Task does not exist!");
     }
-    const deleteById = await pool.query("DELETE FROM tasks WHERE id=$1 RETURNING id", [id]);
-    const deleteTaskId = deleteById.rows[0].id;
-    res.json(`Task: ${deleteTaskId} deleted successfully!`);
+    const deleteById = await pool.query(
+      "DELETE FROM tasks WHERE id=$1 RETURNING id",
+      [id]
+    );
+    res.json(`Task: ${id} deleted successfully!`);
   } catch (error) {
     console.log(error.message);
     res.status(500).send("Internal Server Error!");
