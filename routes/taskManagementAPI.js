@@ -77,11 +77,19 @@ router.put("/tasks/update/:id", async (req, res) => {
       if (checkTaskId.rows.length === 0) {
         return res.json("Task does not exist!");
       }
-      const updateById = await pool.query(
-        "UPDATE tasks SET status=$1 WHERE id=$2",
-        [status, id]
-      );
-      res.json("Task status updated successfully!");
+      const currentTaskStatus = checkTaskId.rows[0].status;
+      if (
+        (status === "incomplete" && currentTaskStatus === "completed") ||
+        (status === "completed" && currentTaskStatus === "incomplete")
+      ) {
+        const updateById = await pool.query(
+          "UPDATE tasks SET status=$1 WHERE id=$2 RETURNING status",
+          [status, id]
+        );
+        res.json("Task status updated successfully!");
+      } else {
+        return res.json(`Task status is already ${status}!`);
+      }
     } catch (error) {
       console.log(error.messgae);
       res.status(500).send("Internal Server Error!");
