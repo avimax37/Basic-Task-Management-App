@@ -4,7 +4,7 @@ const pool = require("../db");
 //Retrieving a list of all tasks.
 router.get("/tasks", async (req, res) => {
   try {
-    const allTasks = await pool.query("SELECT * FROM tasks");
+    const allTasks = await pool.query("SELECT * FROM tasks ORDER BY id ASC");
     res.json({
       type: "success",
       number_of_tasks: allTasks.rowCount,
