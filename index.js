@@ -11,5 +11,3 @@ app.listen(port, () => {
     `Task Management Application started and listening on port ${port}`
   );
 });
-
-// checking
